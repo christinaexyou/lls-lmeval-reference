@@ -1,0 +1,51 @@
+# Role for accessing LMEval resources
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: lmeval-role
+  namespace: test
+rules:
+- apiGroups: ["trustyai.opendatahub.io"]
+  resources: ["lmevaljobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+# RoleBinding to assign the role to the default service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: lmeval-rolebinding
+  namespace: test
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: test
+roleRef:
+  kind: Role
+  name: lmeval-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Also create role with same permissions in default namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: lmeval-role
+  namespace: default
+rules:
+- apiGroups: ["trustyai.opendatahub.io"]
+  resources: ["lmevaljobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+# RoleBinding for default namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: lmeval-rolebinding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: test
+roleRef:
+  kind: Role
+  name: lmeval-role
+  apiGroup: rbac.authorization.k8s.io 

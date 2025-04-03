@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: lmeval-sa
+  namespace: test
+---
+# Create a ClusterRole with permissions to manage lmevaljobs resources
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: lmeval-role
+rules:
+- apiGroups: ["trustyai.opendatahub.io"]
+  resources: ["lmevaljobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+# Bind the ClusterRole to the service account with ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: lmeval-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: lmeval-sa
+  namespace: test
+roleRef:
+  kind: ClusterRole
+  name: lmeval-role
+  apiGroup: rbac.authorization.k8s.io 

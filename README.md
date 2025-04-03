@@ -58,10 +58,21 @@ Let's assume a namespace `test` for the remainder of this document.
 kubectl create namespace test
 ```
 
+> Note
+> Perform any configuration necessary at the `run-config` ConfigMap in `manifests/llama-stack.yaml`.
+> As an example, if you're using `tinyllama` as your model, you might want to reduce `max_tokens`.
+
 Deploy Llama Stack:
 
 ```sh
 kubectl apply -f manifests/llama-stack.yaml -n test
+```
+
+Now apply the necessary permission for Llama Stack to deploy LMEval jobs:
+
+```sh
+kubectl apply -f manifests/lmeval-rbac.yaml
+kubectl apply -f manifests/lmeval-sa.yaml
 ```
 
 Port-forward your Llama Stack API service:
@@ -90,18 +101,22 @@ You should get a result similar to
 Available Models
 
 ┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
-┃ model_type  ┃ identifier        ┃ provider_resource_id   ┃ metadata                   ┃ provider_id           ┃
+┃ model_type ┃ identifier       ┃ provider_resource_id ┃ metadata                 ┃ provider_id          ┃
 ┡━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
-│ llm         │ tinyllama         │ tinyllama              │                            │ vllm-inference         │
-├─────────────┼───────────────────┼────────────────────────┼────────────────────────────┼────────────────────────┤
-│ embedding   │ all-MiniLM-L6-v2  │ all-MiniLM-L6-v2       │ {'embedding_dimension':    │ sentence-transforme…   │
-│             │                   │                        │ 384.0}                     │                        │
-└─────────────┴───────────────────┴────────────────────────┴────────────────────────────┴────────────────────────┘
+│ llm        │ tinyllama        │ tinyllama            │                          │ vllm-inference       │
+├────────────┼──────────────────┼──────────────────────┼──────────────────────────┼──────────────────────┤
+│ embedding  │ all-MiniLM-L6-v2 │ all-MiniLM-L6-v2     │ {'embedding_dimension':  │ sentence-transforme… │
+│            │                  │                      │ 384.0}                   │                      │
+└────────────┴──────────────────┴──────────────────────┴──────────────────────────┴──────────────────────┘
 
 Total models: 2
 ```
 
 Now list the providers, you should see `lmeval`
+
+```sh
+llama-stack-client providers list
+```
 
 ```text
 ┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -117,3 +132,4 @@ Now list the providers, you should see `lmeval`
 │ tool_runtime │ model-context-protocol │ remote::model-context-protocol │
 └──────────────┴────────────────────────┴────────────────────────────────┘
 ```
+
