@@ -133,3 +133,74 @@ llama-stack-client providers list
 └──────────────┴────────────────────────┴────────────────────────────────┘
 ```
 
+## Requests
+
+Inference completion
+
+```sh
+curl -s --request POST \
+    --url {{host}}/v1/inference/completion \
+    --header 'Accept: application/json' \
+    --header 'Content-Type: application/json' \
+    --data '{ "model_id": "{{model}}", "content": "string"}'
+```
+
+
+Inference chat completion:
+```sh
+curl --request POST \
+    --url {{host}}/v1/inference/chat-completion \
+    --header 'Accept: application/json, text/event-stream' \
+    --header 'Content-Type: application/json' \
+--data '{"model_id": "{{model}}", "messages": [{"role": "user", "content": "Hello, how are you?"}]}'
+```
+
+
+    curl --request GET \
+        --url {{host}}/v1/eval/benchmarks \
+        --header 'Accept: application/json'
+
+
+    curl --request POST \
+        --url {{host}}/v1/eval/benchmarks \
+        --header 'Accept: application/json' \
+        --header 'Content-Type: application/json' \
+        --data '{ \
+            "benchmark_id": "{{benchmark_id}}", \
+            "dataset_id": "lmeval::arc_easy", \
+            "scoring_functions": [ \
+                "string" \
+            ], \
+            "provider_benchmark_id": "string", \
+            "provider_id": "lmeval", \
+            "metadata": { \
+                "property1": null, \
+                "property2": null \
+            } \
+    }'
+
+    curl --request POST \
+        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs \
+        --header 'Accept: application/json' \
+        --header 'Content-Type: application/json' \
+        --data @requests/run-benchmark.json
+
+
+    curl --request GET \
+    --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/ \
+    --header 'Accept: application/json'
+
+
+    curl --request DELETE \
+        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/{{id}} \
+        --header 'Accept: application/json'
+
+
+    curl --request GET \
+    --url {{host}}/v1/models \
+    --header 'Accept: application/json'
+
+
+    curl --request GET \
+        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/{{id}} \
+        --header 'Accept: application/json'
