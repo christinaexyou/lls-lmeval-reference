@@ -1,0 +1,13 @@
+{
+    "benchmark_id": "lmeval::mmlu",
+    "dataset_id": "lmeval::mmlu",
+    "scoring_functions": [
+        "string"
+    ],
+    "provider_benchmark_id": "string",
+    "provider_id": "lmeval",
+    "metadata": {
+        "property1": null,
+        "property2": null
+    }
+}

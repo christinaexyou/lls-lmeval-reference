@@ -65,7 +65,7 @@ kubectl create namespace test
 Deploy Llama Stack:
 
 ```sh
-kubectl apply -f manifests/llama-stack.yaml -n test
+LLS_IMAGE=${LLS_IMAGE} kubectl apply -f manifests/llama-stack.yaml -n test
 ```
 
 Now apply the necessary permission for Llama Stack to deploy LMEval jobs:
@@ -135,72 +135,85 @@ llama-stack-client providers list
 
 ## Requests
 
-Inference completion
+Inference chat completion:
 
 ```sh
-curl -s --request POST \
-    --url {{host}}/v1/inference/completion \
-    --header 'Accept: application/json' \
-    --header 'Content-Type: application/json' \
-    --data '{ "model_id": "{{model}}", "content": "string"}'
+llama-stack-client inference chat-completion \
+    --message "Hello! How are you?" \
+    --model-id "tinyllama"
 ```
 
+List available benchmarks:
 
-Inference chat completion:
+```sh
+curl --request GET \
+    --url http://localhost:8321/v1/eval/benchmarks \
+    --header 'Accept: application/json'
+```
+
+Create an MMLU benchmark with LMEval
+
 ```sh
 curl --request POST \
-    --url {{host}}/v1/inference/chat-completion \
-    --header 'Accept: application/json, text/event-stream' \
+    --url http://localhost:8321/v1/eval/benchmarks \
+    --header 'Accept: application/json' \
     --header 'Content-Type: application/json' \
---data '{"model_id": "{{model}}", "messages": [{"role": "user", "content": "Hello, how are you?"}]}'
+    --data @payloads/register-benchmark.json
+```
+
+Now listing benchmarks should return the newly register benchmark:
+
+```sh
+curl --request GET \
+    --url http://localhost:8321/v1/eval/benchmarks \
+    --header 'Accept: application/json'
+```
+
+```json
+{
+  "data": [
+    {
+      "identifier": "lmeval::mmlu",
+      "provider_resource_id": "string",
+      "provider_id": "lmeval",
+      "type": "benchmark",
+      "dataset_id": "lmeval::mmlu",
+      "scoring_functions": [
+        "string"
+      ],
+      "metadata": {
+        "property1": null,
+        "property2": null
+      }
+    }
+  ]
+}
+```
+
+Run the benchmark:
+
+```sh
+curl --request POST \
+    --url http://localhost:8321/v1/eval/benchmarks/lmeval::mmlu/jobs \
+    --header 'Accept: application/json' \
+    --header 'Content-Type: application/json' \
+    --data @payloads/run-benchmark.json
+```
+
+Get the evaluation's job status:
+
+
+```sh
+curl --request GET \
+  --url http://localhost:8321/v1/eval/benchmarks/lmeval::mmlu/jobs/lmeval-job-0 \
+  --header 'Accept: application/json'
 ```
 
 
-    curl --request GET \
-        --url {{host}}/v1/eval/benchmarks \
-        --header 'Accept: application/json'
+Delete the evaluation job:
 
-
-    curl --request POST \
-        --url {{host}}/v1/eval/benchmarks \
-        --header 'Accept: application/json' \
-        --header 'Content-Type: application/json' \
-        --data '{ \
-            "benchmark_id": "{{benchmark_id}}", \
-            "dataset_id": "lmeval::arc_easy", \
-            "scoring_functions": [ \
-                "string" \
-            ], \
-            "provider_benchmark_id": "string", \
-            "provider_id": "lmeval", \
-            "metadata": { \
-                "property1": null, \
-                "property2": null \
-            } \
-    }'
-
-    curl --request POST \
-        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs \
-        --header 'Accept: application/json' \
-        --header 'Content-Type: application/json' \
-        --data @requests/run-benchmark.json
-
-
-    curl --request GET \
-    --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/ \
+```sh
+curl --request DELETE \
+    --url http://localhost:8321/v1/eval/benchmarks/lmeval::mmlu/jobs/lmeval-job-0 \
     --header 'Accept: application/json'
-
-
-    curl --request DELETE \
-        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/{{id}} \
-        --header 'Accept: application/json'
-
-
-    curl --request GET \
-    --url {{host}}/v1/models \
-    --header 'Accept: application/json'
-
-
-    curl --request GET \
-        --url {{host}}/v1/eval/benchmarks/{{benchmark_id}}/jobs/{{id}} \
-        --header 'Accept: application/json'
+```

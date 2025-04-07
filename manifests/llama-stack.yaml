@@ -30,7 +30,7 @@ data:
         provider_type: remote::vllm
         config:
           url: ${env.VLLM_URL}
-          max_tokens: 4096
+          max_tokens: ${env.VLLM_MAX_TOKENS}
           api_token: fake
       - provider_id: sentence-transformers
         provider_type: inline::sentence-transformers
@@ -290,7 +290,7 @@ spec:
           value: fake
         - name:  SAFETY_MODEL
           value: tinyllama
-        image: quay.io/ruimvieira/llama-stack:dev
+        image: quay.io/ruimvieira/distribution-lmeval:dev
         imagePullPolicy: IfNotPresent
         name: llamastack
         ports:

@@ -1,0 +1,47 @@
+{
+    "benchmark_config": {
+      "eval_candidate": {
+        "type": "model",
+        "model": "tinyllama",
+        "sampling_params": {
+          "strategy": {
+            "type": "greedy"
+          },
+          "max_tokens": 0,
+          "repetition_penalty": 1,
+          "stop": [
+            "string"
+          ]
+        },
+        "system_message": {
+          "role": "system",
+          "content": "string"
+        }
+      },
+      "scoring_params": {
+        "property1": {
+          "type": "llm_as_judge",
+          "judge_model": "string",
+          "prompt_template": "string",
+          "judge_score_regexes": [
+            "string"
+          ],
+          "aggregation_functions": [
+            "average"
+          ]
+        },
+        "property2": {
+          "type": "llm_as_judge",
+          "judge_model": "string",
+          "prompt_template": "string",
+          "judge_score_regexes": [
+            "string"
+          ],
+          "aggregation_functions": [
+            "average"
+          ]
+        }
+      },
+      "num_examples": 0
+    }
+  }
