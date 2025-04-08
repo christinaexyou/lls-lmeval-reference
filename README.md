@@ -2,6 +2,20 @@
 
 Assume a common root for all projects (e.g. `~/lls`)
 
+## DataScienceCluster (ODH/RHOAI)
+
+> Note:
+>
+> For this example we will use OpenDataHub, however all steps should remain unchanged when using OpenShift AI.
+
+Install a DataScienceCluster from the provided manifests:
+
+```sh
+kubectl apply -f manifests/dsc.yaml
+```
+
+This will install the necessary TrustyAI operator so that LMEval jobs can be managed.
+
 ## LLama Stack setup
 
 
